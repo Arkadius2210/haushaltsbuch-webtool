@@ -8,7 +8,7 @@ server:
 
 spring:
   datasource:
-    url: jdbc:sqlite:${DB_PATH:./data/haushaltsbuch.db}?date_string_format=yyyy-MM-dd HH:mm:ss
+    url: jdbc:sqlite:${DB_PATH:./data/haushaltsbuch.db}?date_string_format=yyyy-MM-dd'T'HH:mm:ss.SSS
     driver-class-name: org.sqlite.JDBC
     hikari:
       maximum-pool-size: 1
