@@ -1,11 +1,14 @@
 package de.haushaltsbuch.model;
 
 import jakarta.persistence.Column;
+import jakarta.persistence.Convert;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
+
+import de.haushaltsbuch.config.LocalDateTimeConverter;
 
 import java.time.LocalDateTime;
 
@@ -24,6 +27,7 @@ public class Benutzer {
     private String passwordHash;
 
     @Column(name = "erstellt_am", nullable = false)
+    @Convert(converter = LocalDateTimeConverter.class)
     private LocalDateTime erstelltAm;
 
     public Benutzer() {
