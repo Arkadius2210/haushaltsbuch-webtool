@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layout}"
+      lang="de">
+<head>
+    <title>Jahresausgabe</title>
+</head>
+<body>
+    <div layout:fragment="content">
+        <h1 th:text="${jahresausgabeId != null} ? 'Jahresausgabe bearbeiten' : 'Neue Jahresausgabe'">Jahresausgabe</h1>
+
+        <div class="row">
+            <div class="col-md-6">
+                <form th:action="${jahresausgabeId != null} ? @{/jahresausgaben/{id}(id=${jahresausgabeId})} : @{/jahresausgaben}"
+                      th:object="${jahresausgabeForm}"
+                      method="post" novalidate>
+
+                    <div class="mb-3">
+                        <label for="name" class="form-label">Name</label>
+                        <input type="text" id="name" th:field="*{name}"
+                               class="form-control"
+                               th:classappend="${#fields.hasErrors('name')} ? 'is-invalid'"
+                               required maxlength="100"/>
+                        <div class="invalid-feedback" th:if="${#fields.hasErrors('name')}"
+                             th:errors="*{name}">Name-Fehler</div>
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="jahresbetrag" class="form-label">Jahresbetrag (€)</label>
+                        <input type="number" id="jahresbetrag" th:field="*{jahresbetrag}"
+                               class="form-control"
+                               th:classappend="${#fields.hasErrors('jahresbetrag')} ? 'is-invalid'"
+                               step="0.01" min="0.01" required/>
+                        <div class="invalid-feedback" th:if="${#fields.hasErrors('jahresbetrag')}"
+                             th:errors="*{jahresbetrag}">Jahresbetrag-Fehler</div>
+                    </div>
+
+                    <div class="d-flex gap-2">
+                        <button type="submit" class="btn btn-primary">Speichern</button>
+                        <a th:href="@{/jahresausgaben}" class="btn btn-secondary">Abbrechen</a>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

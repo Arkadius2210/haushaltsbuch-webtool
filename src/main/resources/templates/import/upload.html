@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layout}"
+      lang="de">
+<head>
+    <title>Excel-Import</title>
+</head>
+<body>
+    <div layout:fragment="content">
+        <h1 class="mb-4">Excel-Import</h1>
+
+        <div th:if="${fehler}" class="alert alert-danger" role="alert">
+            <span th:text="${fehler}">Fehlermeldung</span>
+        </div>
+
+        <div class="card">
+            <div class="card-body">
+                <h5 class="card-title">Excel-Datei hochladen</h5>
+                <p class="card-text text-muted">
+                    Laden Sie eine <strong>.xlsx</strong>-Datei hoch, um Sparkonten und Jahresausgaben zu importieren.
+                </p>
+                <div class="alert alert-info" role="alert">
+                    <strong>Erwartetes Format:</strong>
+                    <ul class="mb-0 mt-2">
+                        <li>Arbeitsblatt <strong>"Sparkonten"</strong>: Spalten Name, Kontostand, Standardbetrag (ab Zeile 2)</li>
+                        <li>Arbeitsblatt <strong>"Einnahmen_Ausgaben"</strong>: Spalten Name, Betrag (ab Zeile 2)</li>
+                    </ul>
+                </div>
+
+                <form th:action="@{/import/vorschau}" method="post" enctype="multipart/form-data">
+                    <div class="mb-3">
+                        <label for="datei" class="form-label">Excel-Datei (.xlsx)</label>
+                        <input type="file" class="form-control" id="datei" name="datei"
+                               accept=".xlsx,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+                               required aria-describedby="dateiHilfe"/>
+                        <div id="dateiHilfe" class="form-text">Nur .xlsx-Dateien werden unterstützt.</div>
+                    </div>
+                    <button type="submit" class="btn btn-primary">Datei hochladen</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layout}"
+      lang="de">
+<head>
+    <title>Buchungsergebnis</title>
+</head>
+<body>
+    <div layout:fragment="content">
+        <h2>Buchungsergebnis</h2>
+
+        <div class="row mb-4">
+            <div class="col-md-4">
+                <div class="card">
+                    <div class="card-body text-center">
+                        <h6 class="card-subtitle mb-2 text-muted">Gesamtsaldo vorher</h6>
+                        <p class="card-text fs-5"
+                           th:text="${#numbers.formatDecimal(ergebnis.gesamtsaldoVorher(), 1, 'COMMA', 2, 'POINT') + ' €'}">0,00 €</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="card">
+                    <div class="card-body text-center">
+                        <h6 class="card-subtitle mb-2 text-muted">Gesamtsaldo nachher</h6>
+                        <p class="card-text fs-5"
+                           th:text="${#numbers.formatDecimal(ergebnis.gesamtsaldoNachher(), 1, 'COMMA', 2, 'POINT') + ' €'}">0,00 €</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="card border-primary">
+                    <div class="card-body text-center">
+                        <h6 class="card-subtitle mb-2 text-muted">Saldo-Differenz</h6>
+                        <p class="card-text fs-3 fw-bold"
+                           th:text="${#numbers.formatDecimal(ergebnis.saldoDifferenz(), 1, 'COMMA', 2, 'POINT') + ' €'}">0,00 €</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Handlungsanweisung basierend auf Saldo-Differenz -->
+        <div th:if="${ergebnis.saldoDifferenz().signum() > 0}" class="alert alert-success" role="alert">
+            <strong>Handlungsanweisung:</strong> Bitte
+            <span th:text="${#numbers.formatDecimal(ergebnis.saldoDifferenz(), 1, 'COMMA', 2, 'POINT')}">0,00</span> €
+            vom Girokonto auf das Sparkonto überweisen.
+        </div>
+
+        <div th:if="${ergebnis.saldoDifferenz().signum() < 0}" class="alert alert-danger" role="alert">
+            <strong>Handlungsanweisung:</strong> Bitte
+            <span th:text="${#numbers.formatDecimal(ergebnis.saldoDifferenz().abs(), 1, 'COMMA', 2, 'POINT')}">0,00</span> €
+            vom Sparkonto auf das Girokonto überweisen.
+        </div>
+
+        <div th:if="${ergebnis.saldoDifferenz().signum() == 0}" class="alert alert-info" role="alert">
+            Kein Ausgleich nötig – der Gesamtsaldo hat sich nicht verändert.
+        </div>
+
+        <!-- Gebuchte Posten -->
+        <h4 class="mt-4">Gebuchte Posten</h4>
+        <table class="table table-striped" th:if="${!ergebnis.gebuchtePosten().isEmpty()}">
+            <thead>
+                <tr>
+                    <th scope="col">Sparkonto</th>
+                    <th scope="col">Datum</th>
+                    <th scope="col">Betrag</th>
+                    <th scope="col">Typ</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr th:each="buchung : ${ergebnis.gebuchtePosten()}">
+                    <td th:text="${buchung.sparkontoName()}">Sparkonto</td>
+                    <td th:text="${#temporals.format(buchung.datum(), 'dd.MM.yyyy')}">01.01.2024</td>
+                    <td th:text="${#numbers.formatDecimal(buchung.betrag(), 1, 'COMMA', 2, 'POINT') + ' €'}">0,00 €</td>
+                    <td th:text="${buchung.typ()}">MONATSBUCHUNG</td>
+                </tr>
+            </tbody>
+        </table>
+        <p th:if="${ergebnis.gebuchtePosten().isEmpty()}" class="text-muted">Keine Buchungen durchgeführt.</p>
+
+        <a th:href="@{/sparkonten}" class="btn btn-outline-primary mt-3">Zurück zur Sparkonten-Übersicht</a>
+    </div>
+</body>
+</html>

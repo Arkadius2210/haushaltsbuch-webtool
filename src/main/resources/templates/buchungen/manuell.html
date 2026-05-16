@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layout}"
+      lang="de">
+<head>
+    <title>Manuelle Buchung</title>
+</head>
+<body>
+    <div layout:fragment="content">
+        <h2>Manuelle Buchung</h2>
+        <p class="text-muted">Erfassen Sie eine einmalige Zu- oder Abbuchung auf ein Sparkonto.</p>
+
+        <form th:action="@{/buchungen/manuell}" method="post" th:object="${buchungForm}">
+            <div class="mb-3">
+                <label for="sparkontoId" class="form-label">Sparkonto *</label>
+                <select class="form-select" id="sparkontoId" name="sparkontoId"
+                        th:classappend="${#fields.hasErrors('sparkontoId')} ? 'is-invalid'" required>
+                    <option value="" disabled selected th:unless="${buchungForm.sparkontoId() != null}">Bitte wählen...</option>
+                    <option th:each="konto : ${sparkonten}"
+                            th:value="${konto.id()}"
+                            th:text="${konto.name() + ' (Saldo: ' + #numbers.formatDecimal(konto.kontostand(), 1, 'COMMA', 2, 'POINT') + ' €)'}"
+                            th:selected="${konto.id() == buchungForm.sparkontoId()}">
+                    </option>
+                </select>
+                <div class="invalid-feedback" th:if="${#fields.hasErrors('sparkontoId')}"
+                     th:errors="*{sparkontoId}">Sparkonto ist erforderlich</div>
+            </div>
+
+            <div class="mb-3">
+                <label for="betrag" class="form-label">Betrag (€) *</label>
+                <input type="number" step="0.01" class="form-control" id="betrag" name="betrag"
+                       th:value="${buchungForm.betrag()}"
+                       th:classappend="${#fields.hasErrors('betrag')} ? 'is-invalid'"
+                       placeholder="Positiv = Einzahlung, Negativ = Abbuchung" required/>
+                <div class="invalid-feedback" th:if="${#fields.hasErrors('betrag')}"
+                     th:errors="*{betrag}">Betrag ist erforderlich</div>
+                <div class="form-text">Positiver Betrag = Einzahlung, negativer Betrag = Abbuchung</div>
+            </div>
+
+            <div class="mb-3">
+                <label for="datum" class="form-label">Datum *</label>
+                <input type="date" class="form-control" id="datum" name="datum"
+                       th:value="${buchungForm.datum() != null ? buchungForm.datum() : #temporals.format(#temporals.createNow(), 'yyyy-MM-dd')}"
+                       th:classappend="${#fields.hasErrors('datum')} ? 'is-invalid'" required/>
+                <div class="invalid-feedback" th:if="${#fields.hasErrors('datum')}"
+                     th:errors="*{datum}">Datum ist erforderlich</div>
+            </div>
+
+            <div class="mb-3">
+                <label for="beschreibung" class="form-label">Beschreibung</label>
+                <textarea class="form-control" id="beschreibung" name="beschreibung" rows="2"
+                          th:text="${buchungForm.beschreibung()}"
+                          th:classappend="${#fields.hasErrors('beschreibung')} ? 'is-invalid'"
+                          maxlength="255" placeholder="Optional: Grund der Buchung"></textarea>
+                <div class="invalid-feedback" th:if="${#fields.hasErrors('beschreibung')}"
+                     th:errors="*{beschreibung}">Beschreibung zu lang (max. 255 Zeichen)</div>
+            </div>
+
+            <button type="submit" class="btn btn-primary">Buchung speichern</button>
+            <a th:href="@{/sparkonten}" class="btn btn-outline-secondary ms-2">Abbrechen</a>
+        </form>
+    </div>
+</body>
+</html>

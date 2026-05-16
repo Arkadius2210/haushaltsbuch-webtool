@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layout}"
+      lang="de">
+<head>
+    <title>Umbuchung</title>
+</head>
+<body>
+    <div layout:fragment="content">
+        <h2>Umbuchung</h2>
+        <p class="text-muted">Verschieben Sie Geld von einem Sparkonto auf ein anderes. Der Gesamtsaldo bleibt unverändert.</p>
+
+        <div th:if="${gleichesKontoFehler}" class="alert alert-danger" role="alert">
+            <span th:text="${gleichesKontoFehler}">Fehler</span>
+        </div>
+
+        <form th:action="@{/buchungen/umbuchung}" method="post" th:object="${umbuchungForm}">
+            <div class="mb-3">
+                <label for="quellkontoId" class="form-label">Quellkonto *</label>
+                <select class="form-select" id="quellkontoId" name="quellkontoId"
+                        th:classappend="${#fields.hasErrors('quellkontoId')} ? 'is-invalid'" required>
+                    <option value="" disabled selected th:unless="${umbuchungForm.quellkontoId() != null}">Bitte wählen...</option>
+                    <option th:each="konto : ${sparkonten}"
+                            th:value="${konto.id()}"
+                            th:text="${konto.name() + ' (Saldo: ' + #numbers.formatDecimal(konto.kontostand(), 1, 'COMMA', 2, 'POINT') + ' €)'}"
+                            th:selected="${konto.id() == umbuchungForm.quellkontoId()}">
+                    </option>
+                </select>
+                <div class="invalid-feedback" th:if="${#fields.hasErrors('quellkontoId')}"
+                     th:errors="*{quellkontoId}">Quellkonto ist erforderlich</div>
+            </div>
+
+            <div class="mb-3">
+                <label for="zielkontoId" class="form-label">Zielkonto *</label>
+                <select class="form-select" id="zielkontoId" name="zielkontoId"
+                        th:classappend="${#fields.hasErrors('zielkontoId')} ? 'is-invalid'" required>
+                    <option value="" disabled selected th:unless="${umbuchungForm.zielkontoId() != null}">Bitte wählen...</option>
+                    <option th:each="konto : ${sparkonten}"
+                            th:value="${konto.id()}"
+                            th:text="${konto.name() + ' (Saldo: ' + #numbers.formatDecimal(konto.kontostand(), 1, 'COMMA', 2, 'POINT') + ' €)'}"
+                            th:selected="${konto.id() == umbuchungForm.zielkontoId()}">
+                    </option>
+                </select>
+                <div class="invalid-feedback" th:if="${#fields.hasErrors('zielkontoId')}"
+                     th:errors="*{zielkontoId}">Zielkonto ist erforderlich</div>
+            </div>
+
+            <div class="mb-3">
+                <label for="betrag" class="form-label">Betrag (€) *</label>
+                <input type="number" step="0.01" min="0.01" class="form-control" id="betrag" name="betrag"
+                       th:value="${umbuchungForm.betrag()}"
+                       th:classappend="${#fields.hasErrors('betrag')} ? 'is-invalid'"
+                       placeholder="Positiver Betrag" required/>
+                <div class="invalid-feedback" th:if="${#fields.hasErrors('betrag')}"
+                     th:errors="*{betrag}">Betrag muss positiv sein</div>
+                <div class="form-text">Der Betrag wird vom Quellkonto abgezogen und dem Zielkonto gutgeschrieben.</div>
+            </div>
+
+            <div class="mb-3">
+                <label for="datum" class="form-label">Datum *</label>
+                <input type="date" class="form-control" id="datum" name="datum"
+                       th:value="${umbuchungForm.datum() != null ? umbuchungForm.datum() : #temporals.format(#temporals.createNow(), 'yyyy-MM-dd')}"
+                       th:classappend="${#fields.hasErrors('datum')} ? 'is-invalid'" required/>
+                <div class="invalid-feedback" th:if="${#fields.hasErrors('datum')}"
+                     th:errors="*{datum}">Datum ist erforderlich</div>
+            </div>
+
+            <div class="mb-3">
+                <label for="beschreibung" class="form-label">Beschreibung</label>
+                <textarea class="form-control" id="beschreibung" name="beschreibung" rows="2"
+                          th:text="${umbuchungForm.beschreibung()}"
+                          th:classappend="${#fields.hasErrors('beschreibung')} ? 'is-invalid'"
+                          maxlength="255" placeholder="Optional: Grund der Umbuchung"></textarea>
+                <div class="invalid-feedback" th:if="${#fields.hasErrors('beschreibung')}"
+                     th:errors="*{beschreibung}">Beschreibung zu lang (max. 255 Zeichen)</div>
+            </div>
+
+            <button type="submit" class="btn btn-primary">Umbuchung durchführen</button>
+            <a th:href="@{/sparkonten}" class="btn btn-outline-secondary ms-2">Abbrechen</a>
+        </form>
+    </div>
+</body>
+</html>

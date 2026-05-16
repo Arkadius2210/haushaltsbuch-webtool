@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layout}"
+      lang="de">
+<head>
+    <title>Sparkonto</title>
+</head>
+<body>
+    <div layout:fragment="content">
+        <h1 th:text="${sparkontoId != null} ? 'Sparkonto bearbeiten' : 'Neues Sparkonto'">Sparkonto</h1>
+
+        <div class="row">
+            <div class="col-md-6">
+                <form th:action="${sparkontoId != null} ? @{/sparkonten/{id}(id=${sparkontoId})} : @{/sparkonten}"
+                      th:object="${sparkontoForm}"
+                      method="post" novalidate>
+
+                    <div class="mb-3">
+                        <label for="name" class="form-label">Name</label>
+                        <input type="text" id="name" th:field="*{name}"
+                               class="form-control"
+                               th:classappend="${#fields.hasErrors('name')} ? 'is-invalid'"
+                               required maxlength="100"/>
+                        <div class="invalid-feedback" th:if="${#fields.hasErrors('name')}"
+                             th:errors="*{name}">Name-Fehler</div>
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="standardbetrag" class="form-label">Standardbetrag (€)</label>
+                        <input type="number" id="standardbetrag" th:field="*{standardbetrag}"
+                               class="form-control"
+                               th:classappend="${#fields.hasErrors('standardbetrag')} ? 'is-invalid'"
+                               step="0.01" required/>
+                        <div class="invalid-feedback" th:if="${#fields.hasErrors('standardbetrag')}"
+                             th:errors="*{standardbetrag}">Standardbetrag-Fehler</div>
+                    </div>
+
+                    <div class="d-flex gap-2">
+                        <button type="submit" class="btn btn-primary">Speichern</button>
+                        <a th:href="@{/sparkonten}" class="btn btn-secondary">Abbrechen</a>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

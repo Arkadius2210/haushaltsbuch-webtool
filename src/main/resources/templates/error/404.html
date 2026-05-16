@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layout}"
+      lang="de">
+<head>
+    <title>Seite nicht gefunden</title>
+</head>
+<body>
+    <div layout:fragment="content">
+        <div class="row justify-content-center">
+            <div class="col-md-8 text-center">
+                <h1 class="display-4 text-warning">404</h1>
+                <h2>Seite nicht gefunden</h2>
+                <p class="lead">Die angeforderte Seite konnte leider nicht gefunden werden.</p>
+                <a th:href="@{/sparkonten}" class="btn btn-primary mt-3">Zurück zur Übersicht</a>
+            </div>
+        </div>
+    </div>
+</body>
+</html>
